@@ -1,0 +1,26 @@
+{
+  "name": "ecommerce-platform",
+  "version": "1.0.0",
+  "description": "Full-stack e-commerce platform with React and Node.js",
+  "main": "index.js",
+  "scripts": {
+    "dev": "concurrently \"npm run server:dev\" \"npm run client:dev\"",
+    "server:dev": "cd server && npm run dev",
+    "client:dev": "cd client && npm run dev",
+    "build": "cd client && npm run build",
+    "start": "cd server && npm start",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install"
+  },
+  "keywords": [
+    "ecommerce",
+    "react",
+    "nodejs",
+    "express",
+    "postgresql"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
