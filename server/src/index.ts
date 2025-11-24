@@ -99,16 +99,21 @@ app.listen(PORT, async () => {
   console.log(`🚀 Server running on port ${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
   
-  // Sync database
-  await syncDatabase();
+  // Sync database (non-blocking - server will start even if DB fails)
+  syncDatabase().catch((error) => {
+    console.error('⚠️  Database sync failed, but server is running:', error.message);
+  });
   
   // Initialize email service
-  const emailConnected = await emailService.verifyConnection();
-  if (emailConnected) {
-    console.log('📧 Email service connected successfully');
-  } else {
-    console.log('⚠️  Email service connection failed - check SMTP configuration');
-  }
+  emailService.verifyConnection().then((connected) => {
+    if (connected) {
+      console.log('📧 Email service connected successfully');
+    } else {
+      console.log('⚠️  Email service connection failed - check SMTP configuration');
+    }
+  }).catch((error) => {
+    console.log('⚠️  Email service verification failed:', error.message);
+  });
   
   // Initialize cron job scheduler
   console.log('🕒 Cron job scheduler initialized');

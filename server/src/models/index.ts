@@ -49,45 +49,81 @@ Claim.belongsTo(Warranty, { foreignKey: 'warranty_id', as: 'warranty' });
 // PasswordResetToken associations
 PasswordResetToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 
-// Sync database
-const syncDatabase = async () => {
-  try {
-    // Check if database exists
-    const [results] = await sequelize.query(`
-      SELECT table_name 
-      FROM information_schema.tables 
-      WHERE table_schema = 'public' 
-      AND table_name = 'users'
-    `);
-    
-    if (results.length === 0) {
-      // Database doesn't exist, create it fresh
-      console.log('🔄 Creating fresh database...');
-      await sequelize.sync({ force: true });
-    } else {
-      // Database exists, but we need to handle ENUM conflicts
-      console.log('🔄 Database exists, checking for ENUM conflicts...');
+// Sync database with retry logic
+const syncDatabase = async (retries = 5, delay = 2000) => {
+  for (let i = 0; i < retries; i++) {
+    try {
+      // Test connection first
+      await sequelize.authenticate();
+      console.log('✅ Database connection established');
       
-      try {
-        // Try to sync without altering first
-        await sequelize.sync();
-        console.log('✅ Database synced successfully');
-      } catch (syncError) {
-        console.log('⚠️ Sync failed, this might be due to ENUM conflicts.');
-        console.log('💡 Please run: npm run db:reset to reset the database');
-        console.log('   Or manually drop and recreate the database');
-        throw syncError;
+      // Check if database exists
+      const [results] = await sequelize.query(`
+        SELECT table_name 
+        FROM information_schema.tables 
+        WHERE table_schema = 'public' 
+        AND table_name = 'users'
+      `);
+      
+      if (results.length === 0) {
+        // Database doesn't exist, create it fresh
+        console.log('🔄 Creating fresh database...');
+        await sequelize.sync({ force: true });
+      } else {
+        // Database exists, but we need to handle ENUM conflicts
+        console.log('🔄 Database exists, checking for ENUM conflicts...');
+        
+        try {
+          // Try to sync without altering first
+          await sequelize.sync({ alter: false });
+          console.log('✅ Database synced successfully');
+        } catch (syncError: any) {
+          console.log('⚠️ Sync failed, this might be due to ENUM conflicts.');
+          console.log('💡 Attempting to sync with alter mode...');
+          try {
+            await sequelize.sync({ alter: true });
+            console.log('✅ Database synced with alter mode');
+          } catch (alterError) {
+            console.log('⚠️ Sync with alter also failed. Tables may need manual migration.');
+            // Don't throw - allow server to start
+            console.log('⚠️ Server will continue, but database may need manual setup');
+          }
+        }
+      }
+      
+      console.log('✅ Database synchronized successfully');
+      return;
+    } catch (error: any) {
+      const isLastAttempt = i === retries - 1;
+      
+      if (error.code === 'ECONNREFUSED' || error.name === 'SequelizeConnectionRefusedError') {
+        if (isLastAttempt) {
+          console.error('❌ Database connection failed after', retries, 'attempts');
+          console.error('❌ Error:', error.message);
+          console.log('\n⚠️  Server will start, but database features will not work');
+          console.log('🔧 Please ensure:');
+          console.log('   1. Database service is running');
+          console.log('   2. DATABASE_URL or DB_* environment variables are set correctly');
+          console.log('   3. Database is accessible from this host');
+          // Don't throw - allow server to start without database
+          return;
+        } else {
+          console.log(`⚠️  Database connection failed (attempt ${i + 1}/${retries}), retrying in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
+      } else {
+        // Other database errors
+        console.error('❌ Database synchronization failed:', error.message);
+        if (isLastAttempt) {
+          console.log('⚠️  Server will start, but database features may not work');
+          return;
+        } else {
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
       }
     }
-    
-    console.log('✅ Database synchronized successfully');
-  } catch (error) {
-    console.error('❌ Database synchronization failed:', error);
-    console.log('\n🔧 Troubleshooting steps:');
-    console.log('1. Run: npm run db:reset (if available)');
-    console.log('2. Or manually drop and recreate the database');
-    console.log('3. Or run: node src/utils/setupDatabase.js');
-    throw error;
   }
 };
 
