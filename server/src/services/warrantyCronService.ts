@@ -56,10 +56,23 @@ class WarrantyCronService {
 
       for (const warranty of expiringWarranties) {
         try {
-          await emailService.sendWarrantyExpiryReminder(warranty);
-          console.log(`Expiry reminder sent for warranty ${warranty.warranty_id}`);
+          const warrantyData = warranty as any;
+          const user = warrantyData.user;
+          const product = warrantyData.product;
+          const expiryDate = new Date(warrantyData.expiry_date);
+          const today = new Date();
+          const daysUntilExpiry = Math.ceil((expiryDate.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+          
+          await emailService.sendWarrantyExpiryReminder(
+            user.email,
+            user.name,
+            warranty,
+            product,
+            daysUntilExpiry
+          );
+          console.log(`Expiry reminder sent for warranty ${warrantyData.warranty_id}`);
         } catch (error) {
-          console.error(`Failed to send expiry reminder for warranty ${warranty.warranty_id}:`, error);
+          console.error(`Failed to send expiry reminder for warranty ${(warranty as any).warranty_id}:`, error);
         }
       }
 
