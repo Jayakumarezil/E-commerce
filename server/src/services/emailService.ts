@@ -47,8 +47,13 @@ class EmailService {
     this.transporter = nodemailer.createTransport(emailConfig);
   }
 
-  // Verify SMTP connection
+  // Verify SMTP connection (with timeout)
   async verifyConnection(): Promise<boolean> {
+    // Skip verification if credentials are not configured
+    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+      return false;
+    }
+    
     try {
       await this.transporter.verify();
       console.log('SMTP connection verified successfully');
