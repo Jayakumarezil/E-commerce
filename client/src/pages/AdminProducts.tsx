@@ -87,7 +87,7 @@ const AdminProducts: React.FC = () => {
   const [fileList, setFileList] = useState<any[]>([]);
 
   useEffect(() => {
-    dispatch(fetchProductsStart({ limit: 100 }) as any);
+    (dispatch as any)(fetchProductsStart({ limit: 100 } as any));
     dispatch(fetchCategoriesStart() as any);
   }, [dispatch]);
 
@@ -138,7 +138,7 @@ const AdminProducts: React.FC = () => {
   };
 
   const handleDeleteProduct = (productId: string) => {
-    dispatch(deleteProductStart(productId) as any);
+    (dispatch as any)(deleteProductStart(productId as any));
   };
 
   const handleModalOk = async () => {
@@ -170,7 +170,7 @@ const AdminProducts: React.FC = () => {
       console.log('Submitting product data:', productData);
 
       if (editingProduct) {
-        dispatch(updateProductStart({ id: editingProduct.product_id, data: productData }) as any);
+        (dispatch as any)(updateProductStart({ id: editingProduct.product_id, data: productData } as any));
       } else {
         dispatch(createProductStart(productData) as any);
       }

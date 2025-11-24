@@ -21,14 +21,14 @@ import {
 } from '../slices/cartSlice';
 
 // Add to cart saga
-function* addToCartSaga(action: PayloadAction<{ productId: string; quantity: number }>) {
+function* addToCartSaga(action: PayloadAction<{ productId: string; quantity: number }>): Generator<any, void, any> {
   try {
     const { productId, quantity } = action.payload;
-    const cartItem = yield call(cartService.addToCart, productId, quantity);
+    const cartItem: any = yield call(cartService.addToCart, productId, quantity);
     yield put(addToCartSuccess({ cartItem }));
     
     // Fetch updated cart totals after adding item
-    const cartData = yield call(cartService.getCart);
+    const cartData: any = yield call(cartService.getCart);
     yield put(updateCartTotals({
       subtotal: cartData.subtotal,
       tax: cartData.tax,
@@ -41,9 +41,9 @@ function* addToCartSaga(action: PayloadAction<{ productId: string; quantity: num
 }
 
 // Fetch cart saga
-function* fetchCartSaga() {
+function* fetchCartSaga(): Generator<any, void, any> {
   try {
-    const cartData = yield call(cartService.getCart);
+    const cartData: any = yield call(cartService.getCart);
     yield put(fetchCartSuccess(cartData));
   } catch (error: any) {
     yield put(fetchCartFailure(error.message || 'Failed to fetch cart'));
@@ -51,14 +51,14 @@ function* fetchCartSaga() {
 }
 
 // Update cart item saga
-function* updateCartItemSaga(action: PayloadAction<{ cartItemId: string; quantity: number }>) {
+function* updateCartItemSaga(action: PayloadAction<{ cartItemId: string; quantity: number }>): Generator<any, void, any> {
   try {
     const { cartItemId, quantity } = action.payload;
-    const cartItem = yield call(cartService.updateCartItem, cartItemId, quantity);
+    const cartItem: any = yield call(cartService.updateCartItem, cartItemId, quantity);
     yield put(updateCartItemSuccess({ cartItem }));
     
     // Fetch updated cart totals after updating item
-    const cartData = yield call(cartService.getCart);
+    const cartData: any = yield call(cartService.getCart);
     yield put(updateCartTotals({
       subtotal: cartData.subtotal,
       tax: cartData.tax,
@@ -71,14 +71,14 @@ function* updateCartItemSaga(action: PayloadAction<{ cartItemId: string; quantit
 }
 
 // Remove from cart saga
-function* removeFromCartSaga(action: PayloadAction<string>) {
+function* removeFromCartSaga(action: PayloadAction<string>): Generator<any, void, any> {
   try {
     const cartItemId = action.payload;
     yield call(cartService.removeFromCart, cartItemId);
     yield put(removeFromCartSuccess(cartItemId));
      
     // Fetch updated cart totals after removing item
-    const cartData = yield call(cartService.getCart);
+    const cartData: any = yield call(cartService.getCart);
     yield put(updateCartTotals({
       subtotal: cartData.subtotal,
       tax: cartData.tax,
@@ -91,7 +91,7 @@ function* removeFromCartSaga(action: PayloadAction<string>) {
 }
 
 // Clear cart saga
-function* clearCartSaga() {
+function* clearCartSaga(): Generator<any, void, any> {
   try {
     yield call(cartService.clearCart);
     yield put(clearCartSuccess());

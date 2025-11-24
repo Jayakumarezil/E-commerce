@@ -51,7 +51,7 @@ const ProductDetail: React.FC = () => {
 
   useEffect(() => {
     if (id && id !== 'undefined') {
-      dispatch(fetchProductByIdStart(id));
+      (dispatch as any)(fetchProductByIdStart(id as any));
     } else if (!id) {
       // If no id parameter, redirect to products page
       navigate('/products');
@@ -64,11 +64,12 @@ const ProductDetail: React.FC = () => {
   useEffect(() => {
     // Fetch related products when current product loads
     if (currentProduct) {
+      const categoryName = typeof currentProduct.category === 'string' ? currentProduct.category : currentProduct.category.name;
       dispatch(fetchProductsStart({
-        category: currentProduct.category,
+        category: categoryName,
         limit: 4,
         page: 1,
-      }));
+      } as any));
     }
   }, [dispatch, currentProduct]);
 
@@ -84,7 +85,7 @@ const ProductDetail: React.FC = () => {
     dispatch(addToCartStart({
       productId: currentProduct.product_id,
       quantity,
-    }));
+    } as any));
 
     message.success(`${quantity} ${currentProduct.name} added to cart`);
   };
@@ -142,8 +143,8 @@ const ProductDetail: React.FC = () => {
                   dots={{ className: 'custom-dots' }}
                   beforeChange={(from, to) => setSelectedImageIndex(to)}
                 >
-                  {(currentProduct.images_json || currentProduct.images || []).map((image, index) => {
-                    let imageUrl = typeof image === 'string' ? image : image.image_url;
+                  {(currentProduct.images_json || currentProduct.images || []).map((image: any, index) => {
+                    let imageUrl = typeof image === 'string' ? image : (image?.image_url || image);
                     // Convert to full URL if relative
                     if (imageUrl && !imageUrl.startsWith('http')) {
                       imageUrl = imageUrl.startsWith('/uploads') 
@@ -177,8 +178,8 @@ const ProductDetail: React.FC = () => {
                 {/* Thumbnail Navigation */}
                 {((currentProduct.images_json?.length || 0) + (currentProduct.images?.length || 0)) > 1 && (
                   <div className="flex space-x-2 mt-4">
-                    {(currentProduct.images_json || currentProduct.images || []).map((image, index) => {
-                      let imageUrl = typeof image === 'string' ? image : image.image_url;
+                    {(currentProduct.images_json || currentProduct.images || []).map((image: any, index) => {
+                      let imageUrl = typeof image === 'string' ? image : (image?.image_url || image);
                       // Convert to full URL if relative
                       if (imageUrl && !imageUrl.startsWith('http')) {
                         imageUrl = imageUrl.startsWith('/uploads') 
@@ -232,7 +233,7 @@ const ProductDetail: React.FC = () => {
                 <Tag color={stockStatus.color} icon={stockStatus.icon}>
                   {stockStatus.text}
                 </Tag>
-                <Tag color="blue">{currentProduct.category}</Tag>
+                <Tag color="blue">{typeof currentProduct.category === 'string' ? currentProduct.category : currentProduct.category.name}</Tag>
               </div>
               <div className="text-3xl font-bold text-blue-600 mb-4">
                 {formatPrice(currentProduct.price)}
@@ -258,7 +259,7 @@ const ProductDetail: React.FC = () => {
                 </div>
                 <div className="flex justify-between">
                   <Text strong>Category:</Text>
-                  <Text>{currentProduct.category}</Text>
+                  <Text>{typeof currentProduct.category === 'string' ? currentProduct.category : currentProduct.category.name}</Text>
                 </div>
               </div>
             </div>
@@ -394,7 +395,7 @@ const ProductDetail: React.FC = () => {
                             {formatPrice(product.price)}
                           </div>
                           <div className="text-sm text-gray-600">
-                            {product.category}
+                            {typeof product.category === 'string' ? product.category : product.category.name}
                           </div>
                         </div>
                       }

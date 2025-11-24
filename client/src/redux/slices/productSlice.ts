@@ -35,6 +35,7 @@ interface ProductState {
     sortBy: string;
     sortOrder: 'ASC' | 'DESC';
     warranty: string;
+    page?: number;
   };
   pagination: {
     currentPage: number;

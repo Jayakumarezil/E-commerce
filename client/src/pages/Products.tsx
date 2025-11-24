@@ -41,14 +41,14 @@ const Products: React.FC = () => {
   // Debounced search function
   const debouncedSearch = useCallback(
     debounce((value: string) => {
-      dispatch(setFilters({ search: value, page: 1 }));
+      dispatch(setFilters({ search: value, page: 1 } as any));
     }, 500),
     [dispatch]
   );
 
   useEffect(() => {
     dispatch(fetchCategoriesStart());
-    dispatch(fetchProductsStart(filters));
+    dispatch(fetchProductsStart(filters as any));
   }, [dispatch, filters]);
 
   const handleSearch = (value: string) => {
@@ -57,15 +57,15 @@ const Products: React.FC = () => {
   };
 
   const handleCategoryChange = (category: string) => {
-    dispatch(setFilters({ category, page: 1 }));
+    dispatch(setFilters({ category, page: 1 } as any));
   };
 
   const handlePriceChange = (value: [number, number]) => {
-    dispatch(setFilters({ minPrice: value[0], maxPrice: value[1], page: 1 }));
+    dispatch(setFilters({ minPrice: value[0], maxPrice: value[1], page: 1 } as any));
   };
 
   const handleWarrantyChange = (warranty: string) => {
-    dispatch(setFilters({ warranty, page: 1 }));
+    dispatch(setFilters({ warranty, page: 1 } as any));
   };
 
   const handleSortChange = (sortBy: string) => {
@@ -80,12 +80,12 @@ const Products: React.FC = () => {
       sortOrder = 'ASC';
     }
     
-    dispatch(setFilters({ sortBy, sortOrder, page: 1 }));
+    dispatch(setFilters({ sortBy, sortOrder, page: 1 } as any));
   };
 
   const handlePageChange = (page: number) => {
     dispatch(setPagination({ currentPage: page }));
-    dispatch(setFilters({ page }));
+    dispatch(setFilters({ page } as any));
   };
 
   const clearFilters = () => {

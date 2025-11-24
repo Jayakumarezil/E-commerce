@@ -109,7 +109,7 @@ export const fetchDashboardStats = createAsyncThunk(
 
 export const fetchMonthlySales = createAsyncThunk(
   'admin/fetchMonthlySales',
-  async (year?: number, { rejectWithValue }) => {
+  async (year: number | undefined, { rejectWithValue }) => {
     try {
       const response = await adminService.getMonthlySales(year);
       return response.data;
@@ -121,7 +121,7 @@ export const fetchMonthlySales = createAsyncThunk(
 
 export const fetchTopSellingProducts = createAsyncThunk(
   'admin/fetchTopSellingProducts',
-  async (limit?: number, { rejectWithValue }) => {
+  async (limit: number | undefined, { rejectWithValue }) => {
     try {
       const response = await adminService.getTopSellingProducts(limit);
       return response.data;

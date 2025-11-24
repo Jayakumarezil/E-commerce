@@ -150,7 +150,10 @@ const authSlice = createSlice({
       .addCase(login.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
+        state.user = {
+          ...action.payload.user,
+          role: (action.payload.user.role === 'admin' ? 'admin' : 'customer') as 'customer' | 'admin'
+        };
         state.token = action.payload.token;
         state.error = null;
         localStorage.setItem('token', action.payload.token);
@@ -173,7 +176,10 @@ const authSlice = createSlice({
       .addCase(register.fulfilled, (state, action) => {
         state.isLoading = false;
         state.isAuthenticated = true;
-        state.user = action.payload.user;
+        state.user = {
+          ...action.payload.user,
+          role: (action.payload.user.role === 'admin' ? 'admin' : 'customer') as 'customer' | 'admin'
+        };
         state.token = action.payload.token;
         state.error = null;
         localStorage.setItem('token', action.payload.token);

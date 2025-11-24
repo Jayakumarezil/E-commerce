@@ -8,10 +8,10 @@ import {
   updateProfile,
 } from '../slices/authSlice';
 
-function* loginSaga(action: PayloadAction<{ email: string; password: string }>) {
+function* loginSaga(action: PayloadAction<{ email: string; password: string }>): Generator<any, void, any> {
   try {
     const { email, password } = action.payload;
-    const response = yield call(authService.login, email, password);
+    const response: any = yield call(authService.login, email, password);
     
     yield put(loginSuccess({
       user: response.user,
@@ -22,10 +22,10 @@ function* loginSaga(action: PayloadAction<{ email: string; password: string }>) 
   }
 }
 
-function* registerSaga(action: PayloadAction<{ email: string; password: string; firstName: string; lastName: string }>) {
+function* registerSaga(action: PayloadAction<{ email: string; password: string; firstName: string; lastName: string }>): Generator<any, void, any> {
   try {
     const { email, password, firstName, lastName } = action.payload;
-    const response = yield call(authService.register, email, password, firstName, lastName);
+    const response: any = yield call(authService.register as any, email, password, firstName, lastName);
     
     yield put(loginSuccess({
       user: response.user,
@@ -36,7 +36,7 @@ function* registerSaga(action: PayloadAction<{ email: string; password: string; 
   }
 }
 
-function* logoutSaga() {
+function* logoutSaga(): Generator<any, void, any> {
   try {
     yield call(authService.logout);
   } catch (error) {
@@ -44,9 +44,9 @@ function* logoutSaga() {
   }
 }
 
-function* updateProfileSaga(action: PayloadAction<any>) {
+function* updateProfileSaga(action: PayloadAction<any>): Generator<any, void, any> {
   try {
-    const response = yield call(authService.updateProfile, action.payload);
+    const response: any = yield call(authService.updateProfile, action.payload);
     yield put(updateProfile(response));
   } catch (error: any) {
     console.error('Update profile error:', error);

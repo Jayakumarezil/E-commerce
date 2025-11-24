@@ -55,7 +55,7 @@ export const openRazorpayPayment = async (
 
     // Razorpay options - using direct amount approach
     const options = {
-      key: (import.meta.env.VITE_RAZORPAY_KEY_ID as string) || '',
+      key: ((import.meta.env as any).VITE_RAZORPAY_KEY_ID as string) || '',
       amount: amount * 100, // Convert to paise
       currency: 'INR',
       name: 'Vellore Mobile Point',

@@ -49,7 +49,7 @@ interface PasswordFormData {
 
 const Profile: React.FC = () => {
   const dispatch = useDispatch();
-  const { user, loading, error } = useSelector((state: RootState) => state.auth);
+  const { user, isLoading: loading, error } = useSelector((state: RootState) => state.auth);
   const [profileForm] = Form.useForm();
   const [addressForm] = Form.useForm();
   const [passwordForm] = Form.useForm();

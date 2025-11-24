@@ -23,7 +23,7 @@ const WarrantyRegistration: React.FC = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const { loading } = useSelector((state: RootState) => state.warranty);
-  const { orders } = useSelector((state: RootState) => state.order);
+  const { orders } = useSelector((state: RootState) => state.orders);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [fileList, setFileList] = useState<any[]>([]);
 
@@ -31,7 +31,7 @@ const WarrantyRegistration: React.FC = () => {
     // Fetch user orders to populate product selector
     const userId = localStorage.getItem('userId');
     if (userId) {
-      dispatch(fetchUserOrdersStart({ userId, page: 1, limit: 100 }) as any);
+      (dispatch as any)(fetchUserOrdersStart({ userId, page: 1, limit: 100 } as any));
     }
   }, [dispatch]);
 

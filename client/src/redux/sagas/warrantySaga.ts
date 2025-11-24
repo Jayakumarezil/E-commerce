@@ -17,7 +17,7 @@ function* registerWarrantySaga(action: PayloadAction<{
   purchase_date: string;
   serial_number: string;
   invoice_url?: string;
-}>) {
+}>): Generator<any, void, any> {
   try {
     // Placeholder - will be implemented later with actual API calls
     const warranty = {
@@ -39,11 +39,11 @@ function* registerWarrantySaga(action: PayloadAction<{
 }
 
 // Auto-register warranty saga
-function* autoRegisterWarrantySaga(action: PayloadAction<string>) {
+function* autoRegisterWarrantySaga(action: PayloadAction<string>): Generator<any, void, any> {
   try {
     // Placeholder - will be implemented later with actual API calls
     const warranties: any[] = [];
-    yield put(autoRegisterWarranty.fulfilled(warranties, action.type, action.payload));
+    yield put(autoRegisterWarranty.fulfilled(warranties as any, action.type, action.payload));
   } catch (error: any) {
     yield put(autoRegisterWarranty.rejected(error.message, action.type, action.payload));
   }
@@ -55,7 +55,7 @@ function* fetchUserWarrantiesSaga(action: PayloadAction<{
   page?: number;
   limit?: number;
   status?: string;
-}>) {
+}>): Generator<any, void, any> {
   try {
     // Placeholder - will be implemented later with actual API calls
     const response = {
@@ -74,11 +74,11 @@ function* fetchUserWarrantiesSaga(action: PayloadAction<{
 }
 
 // Fetch warranty by ID saga
-function* fetchWarrantyByIdSaga(action: PayloadAction<string>) {
+function* fetchWarrantyByIdSaga(action: PayloadAction<string>): Generator<any, void, any> {
   try {
     // Placeholder - will be implemented later with actual API calls
     const warranty = null;
-    yield put(fetchWarrantyById.fulfilled(warranty, action.type, action.payload));
+    yield put(fetchWarrantyById.fulfilled(warranty as any, action.type, action.payload));
   } catch (error: any) {
     yield put(fetchWarrantyById.rejected(error.message, action.type, action.payload));
   }
@@ -92,9 +92,9 @@ function* fetchUserClaimsSaga(action: PayloadAction<{
   page?: number;
   limit?: number;
   status?: string;
-}>) {
+}>): Generator<any, void, any> {
   try {
-    const response = yield call(
+    const response: any = yield call(
       warrantyService.getUserClaims,
       action.payload.userId,
       action.payload.page || 1,
@@ -112,9 +112,9 @@ function* fetchAllClaimsSaga(action: PayloadAction<{
   page?: number;
   limit?: number;
   status?: string;
-}>) {
+}>): Generator<any, void, any> {
   try {
-    const response = yield call(
+    const response: any = yield call(
       warrantyService.getAllClaims,
       action.payload.page || 1,
       action.payload.limit || 20,
@@ -133,10 +133,10 @@ function* updateClaimStatusSaga(action: PayloadAction<{
     status: 'pending' | 'approved' | 'rejected' | 'resolved';
     admin_notes?: string;
   };
-}>) {
+}>): Generator<any, void, any> {
   try {
     console.log('Saga: updateClaimStatusSaga called with:', action.payload);
-    const claim = yield call(
+    const claim: any = yield call(
       warrantyService.updateClaimStatus,
       action.payload.claimId,
       action.payload.statusData

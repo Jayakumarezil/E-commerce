@@ -62,7 +62,7 @@ const Cart: React.FC = () => {
   };
 
   const handleRemoveItem = (cartItemId: string) => {
-    dispatch(removeFromCartStart(cartItemId));
+    dispatch(removeFromCartStart(cartItemId as any));
   };
 
   const handleClearCart = () => {

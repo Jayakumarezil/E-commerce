@@ -25,34 +25,34 @@ import {
   deleteProductFailure,
 } from '../slices/productSlice';
 
-function* fetchProductsSaga(action: PayloadAction<ProductFilters>) {
+function* fetchProductsSaga(action: PayloadAction<ProductFilters>): Generator<any, void, any> {
   try {
-    const response = yield call(productService.getProducts, action.payload);
+    const response: any = yield call(productService.getProducts, action.payload);
     yield put(fetchProductsSuccess(response));
   } catch (error: any) {
     yield put(fetchProductsFailure(error.message || 'Failed to fetch products'));
   }
 }
 
-function* fetchFeaturedProductsSaga() {
+function* fetchFeaturedProductsSaga(): Generator<any, void, any> {
   try {
-    const response = yield call(productService.getFeaturedProducts);
+    const response: any = yield call(productService.getFeaturedProducts);
     yield put(fetchFeaturedProductsSuccess(response));
   } catch (error: any) {
     yield put(fetchFeaturedProductsFailure(error.message || 'Failed to fetch featured products'));
   }
 }
 
-function* fetchCategoriesSaga() {
+function* fetchCategoriesSaga(): Generator<any, void, any> {
   try {
-    const response = yield call(productService.getCategories);
+    const response: any = yield call(productService.getCategories);
     yield put(fetchCategoriesSuccess(response));
   } catch (error: any) {
     yield put(fetchCategoriesFailure(error.message || 'Failed to fetch categories'));
   }
 }
 
-function* fetchProductByIdSaga(action: PayloadAction<string>) {
+function* fetchProductByIdSaga(action: PayloadAction<string>): Generator<any, void, any> {
   try {
     // Guard against undefined or invalid IDs
     if (!action.payload || action.payload === 'undefined' || action.payload.trim() === '') {
@@ -60,32 +60,32 @@ function* fetchProductByIdSaga(action: PayloadAction<string>) {
       return;
     }
     
-    const response = yield call(productService.getProductById, action.payload);
+    const response: any = yield call(productService.getProductById, action.payload);
     yield put(fetchProductByIdSuccess(response));
   } catch (error: any) {
     yield put(fetchProductByIdFailure(error.message || 'Failed to fetch product'));
   }
 }
 
-function* createProductSaga(action: PayloadAction<any>) {
+function* createProductSaga(action: PayloadAction<any>): Generator<any, void, any> {
   try {
-    const response = yield call(productService.createProduct, action.payload);
+    const response: any = yield call(productService.createProduct, action.payload);
     yield put(createProductSuccess(response));
   } catch (error: any) {
     yield put(createProductFailure(error.message || 'Failed to create product'));
   }
 }
 
-function* updateProductSaga(action: PayloadAction<{ id: string; data: any }>) {
+function* updateProductSaga(action: PayloadAction<{ id: string; data: any }>): Generator<any, void, any> {
   try {
-    const response = yield call(productService.updateProduct, action.payload.id, action.payload.data);
+    const response: any = yield call(productService.updateProduct, action.payload.id, action.payload.data);
     yield put(updateProductSuccess(response));
   } catch (error: any) {
     yield put(updateProductFailure(error.message || 'Failed to update product'));
   }
 }
 
-function* deleteProductSaga(action: PayloadAction<string>) {
+function* deleteProductSaga(action: PayloadAction<string>): Generator<any, void, any> {
   try {
     yield call(productService.deleteProduct, action.payload);
     yield put(deleteProductSuccess(action.payload));

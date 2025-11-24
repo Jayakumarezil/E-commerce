@@ -45,10 +45,10 @@ const AppleNavbar: React.FC = () => {
       key: 'orders',
       label: <Link to="/orders">Orders</Link>,
     },
-    { type: 'divider' },
+    { type: 'divider' as const },
     ...(user?.role === 'admin' ? [
       { key: 'admin', label: <Link to="/admin/dashboard">Admin</Link> },
-      { type: 'divider' },
+      { type: 'divider' as const },
     ] : []),
     {
       key: 'logout',

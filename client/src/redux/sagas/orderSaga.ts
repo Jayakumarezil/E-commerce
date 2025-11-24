@@ -23,10 +23,10 @@ import {
 function* createOrderSaga(action: PayloadAction<{
   shippingAddress: any;
   paymentMethod?: string;
-}>) {
+}>): Generator<any, void, any> {
   try {
     const { shippingAddress, paymentMethod } = action.payload;
-    const order = yield call(orderService.createOrder, {
+    const order: any = yield call(orderService.createOrder as any, {
       shipping_address: shippingAddress,
       payment_method: paymentMethod,
     });
@@ -41,10 +41,10 @@ function* fetchUserOrdersSaga(action: PayloadAction<{
   page?: number;
   limit?: number;
   status?: string;
-}>) {
+}>): Generator<any, void, any> {
   try {
     const { page = 1, limit = 10, status } = action.payload;
-    const ordersData = yield call(orderService.getUserOrders, page, limit, status);
+    const ordersData: any = yield call(orderService.getUserOrders, page, limit, status);
     yield put(fetchUserOrdersSuccess(ordersData));
   } catch (error: any) {
     yield put(fetchUserOrdersFailure(error.message || 'Failed to fetch orders'));
@@ -52,10 +52,10 @@ function* fetchUserOrdersSaga(action: PayloadAction<{
 }
 
 // Fetch order by ID saga
-function* fetchOrderByIdSaga(action: PayloadAction<string>) {
+function* fetchOrderByIdSaga(action: PayloadAction<string>): Generator<any, void, any> {
   try {
     const orderId = action.payload;
-    const order = yield call(orderService.getOrderById, orderId);
+    const order: any = yield call(orderService.getOrderById, orderId);
     yield put(fetchOrderByIdSuccess({ order }));
   } catch (error: any) {
     yield put(fetchOrderByIdFailure(error.message || 'Failed to fetch order'));
@@ -67,10 +67,10 @@ function* updateOrderStatusSaga(action: PayloadAction<{
   orderId: string;
   orderStatus?: string;
   paymentStatus?: string;
-}>) {
+}>): Generator<any, void, any> {
   try {
     const { orderId, orderStatus, paymentStatus } = action.payload;
-    const order = yield call(orderService.updateOrderStatus, orderId, orderStatus, paymentStatus);
+    const order: any = yield call(orderService.updateOrderStatus, orderId, orderStatus, paymentStatus);
     yield put(updateOrderStatusSuccess({ order }));
   } catch (error: any) {
     yield put(updateOrderStatusFailure(error.message || 'Failed to update order status'));
@@ -78,10 +78,10 @@ function* updateOrderStatusSaga(action: PayloadAction<{
 }
 
 // Cancel order saga
-function* cancelOrderSaga(action: PayloadAction<string>) {
+function* cancelOrderSaga(action: PayloadAction<string>): Generator<any, void, any> {
   try {
     const orderId = action.payload;
-    const order = yield call(orderService.cancelOrder, orderId);
+    const order: any = yield call(orderService.cancelOrder, orderId);
     yield put(cancelOrderSuccess({ order }));
   } catch (error: any) {
     yield put(cancelOrderFailure(error.message || 'Failed to cancel order'));
