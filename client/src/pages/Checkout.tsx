@@ -31,6 +31,7 @@ import { formatPrice } from '../utils/helpers';
 import { createOrder } from '../redux/slices/orderSlice';
 import { clearCartStart, clearCartSuccess } from '../redux/slices/cartSlice';
 import { openRazorpayPayment, openUPIPayment } from '../utils/razorpay';
+import qrCodeImage from '../assets/images/QR_code.png';
 
 const { Title, Text } = Typography;
 const { TextArea } = Input;
@@ -57,9 +58,9 @@ const Checkout: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const showPaymentMethods = String(((import.meta as any).env?.VITE_SHOW_PAYMENT_METHODS ?? 'false')).toLowerCase() === 'true';
   const forceQr = String(((import.meta as any).env?.VITE_USE_QR_PAYMENT ?? 'false')).toLowerCase() === 'true';
-  const envQr = new URL('../assets/images/QR_code.png', import.meta.url).href;
-  const fallbackQr = new URL('../assets/images/QR_code.png', import.meta.url).href;
-  const qrImageSrc = envQr || fallbackQr;
+  
+  // Use imported QR code image or fallback to environment variable
+  const qrImageSrc = ((import.meta as any).env?.VITE_QR_IMAGE_URL) || qrCodeImage;
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'upi' | 'card'>('razorpay');
   const [qrModalVisible, setQrModalVisible] = useState(false);
   const [placedOrderId, setPlacedOrderId] = useState<string | null>(null);

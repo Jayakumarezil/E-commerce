@@ -181,10 +181,12 @@ const ProductDetail: React.FC = () => {
                     {(currentProduct.images_json || currentProduct.images || []).map((image: any, index) => {
                       let imageUrl = typeof image === 'string' ? image : (image?.image_url || image);
                       // Skip placeholder/example URLs
+                      console.log('imageUrl------', imageUrl);
                       if (imageUrl && (imageUrl.includes('example.com') || imageUrl.includes('placeholder'))) {
                         return null;
                       }
-                      const fullImageUrl = getImageUrl(imageUrl);
+                      const fullImageUrl =  getImageUrl(imageUrl);
+                      console.log('fullImageUrl------', fullImageUrl);
                       if (!fullImageUrl) return null;
                       return (
                         <div
