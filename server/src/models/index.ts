@@ -94,6 +94,7 @@ const syncDatabase = async (retries = 5, delay = 2000) => {
       console.log('✅ Database synchronized successfully');
       return;
     } catch (error: any) {
+      console.log('Error:', error);
       const isLastAttempt = i === retries - 1;
       
       if (error.code === 'ECONNREFUSED' || error.name === 'SequelizeConnectionRefusedError') {
