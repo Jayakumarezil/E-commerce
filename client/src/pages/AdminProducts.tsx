@@ -37,23 +37,11 @@ import {
   UploadOutlined,
   EyeOutlined,
 } from '@ant-design/icons';
-import { formatPrice, getStockStatus, formatDateOnly } from '../utils/helpers';
+import { formatPrice, getStockStatus, formatDateOnly, getImageUrl, getProductImageUrl } from '../utils/helpers';
 
 const { Title } = Typography;
 const { TextArea } = Input;
 const { Option } = Select;
-
-// Helper function to get full image URL
-const getImageUrl = (url: string | undefined): string => {
-  if (!url) return '';
-  // If already a full URL, return as is
-  if (url.startsWith('http://') || url.startsWith('https://')) return url;
-  // Add server base URL for relative paths
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const apiBase = ((import.meta as any).env.VITE_API_BASE_URL as string) || 'http://localhost:5000/api';
-  const baseUrl = apiBase.replace('/api', '');
-  return `${baseUrl}${url.startsWith('/') ? '' : '/'}${url}`;
-};
 
 interface Product {
   product_id: string;
@@ -245,41 +233,20 @@ const AdminProducts: React.FC = () => {
       width: 80,
       align: 'center' as const,
       render: (_: any, record: Product) => {
-        // Get first image from either images array or images_json
-        let firstImageUrl = '';
-        
-        if (record.images && Array.isArray(record.images) && record.images.length > 0) {
-          // New format: images array
-          firstImageUrl = typeof record.images[0] === 'string' 
-            ? record.images[0] 
-            : record.images[0]?.image_url || '';
-        } else if (record.images_json && Array.isArray(record.images_json) && record.images_json.length > 0) {
-          // Old format: images_json
-          firstImageUrl = record.images_json[0];
-        }
-        
-        // Convert to full URL if relative
-        let fullImageUrl = firstImageUrl;
-        if (firstImageUrl && !firstImageUrl.startsWith('http')) {
-          fullImageUrl = firstImageUrl.startsWith('/uploads') 
-            ? ((import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000') + firstImageUrl 
-            : firstImageUrl;
-        }
-        
-        // Skip placeholder images
-        const isPlaceholder = fullImageUrl.includes('example.com') || fullImageUrl.includes('placeholder');
+        const imageUrl = getProductImageUrl(record);
         
         return (
           <div className="w-12 h-12">
-            {fullImageUrl && !isPlaceholder ? (
+            {imageUrl ? (
               <Image
-                src={fullImageUrl}
+                src={imageUrl}
                 alt="Product"
                 className="w-full h-full object-cover rounded"
                 preview={false}
                 onError={(e) => {
-                  console.error('Failed to load image:', fullImageUrl);
-                  e.currentTarget.src = '/placeholder-image.jpg';
+                  console.error('Failed to load image:', imageUrl);
+                  e.currentTarget.style.display = 'none';
+                  e.currentTarget.parentElement!.innerHTML = '<div class="w-full h-full bg-gray-200 rounded flex items-center justify-center"><span class="text-xs text-gray-500">No Image</span></div>';
                 }}
               />
             ) : (

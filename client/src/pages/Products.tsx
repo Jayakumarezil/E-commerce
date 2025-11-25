@@ -24,7 +24,7 @@ import {
 } from 'antd';
 import { SearchOutlined, FilterOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
-import { debounce, formatPrice, getStockStatus } from '../utils/helpers';
+import { debounce, formatPrice, getStockStatus, getProductImageUrl } from '../utils/helpers';
 
 const { Title, Text } = Typography;
 const { Search } = Input;
@@ -277,42 +277,31 @@ const Products: React.FC = () => {
                         hoverable
                         cover={
                           <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
-                            {(product.images_json && product.images_json.length > 0) || (product.images && product.images.length > 0) ? (
-                              (() => {
-                                // Get first image URL
-                                const imageUrl = product.images_json?.[0] || product.images?.[0]?.image_url || '';
-                                // Convert to full URL if relative
-                                const fullUrl = imageUrl.startsWith('http') ? imageUrl : 
-                                  imageUrl.startsWith('/uploads') ?((import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000') + imageUrl : imageUrl;
-                                // Skip placeholder/example URLs silently
-                                const isPlaceholder = fullUrl.includes('example.com') || fullUrl.includes('placeholder');
-                                
-                                if (isPlaceholder) {
-                                  return (
-                                    <div className="text-gray-400 w-full h-full flex items-center justify-center">
-                                      <span>No Image</span>
-                                    </div>
-                                  );
-                                }
-                                
+                            {(() => {
+                              const imageUrl = getProductImageUrl(product);
+                              if (!imageUrl) {
                                 return (
-                                  <img
-                                    alt={product.name}
-                                    src={fullUrl}
-                                    className="w-full h-full object-cover"
-                                    onError={(e) => {
-                                      // Only log unexpected errors, not placeholders
-                                      if (!fullUrl.includes('example.com') && !fullUrl.includes('placeholder')) {
-                                        console.error('Image load error:', fullUrl);
-                                      }
-                                      e.currentTarget.style.display = 'none';
-                                    }}
-                                  />
+                                  <div className="text-gray-400 w-full h-full flex items-center justify-center">
+                                    <span>No Image</span>
+                                  </div>
                                 );
-                              })()
-                            ) : (
-                              <div className="text-gray-400">No Image</div>
-                            )}
+                              }
+                              return (
+                                <img
+                                  alt={product.name}
+                                  src={imageUrl}
+                                  className="w-full h-full object-cover"
+                                  onError={(e) => {
+                                    console.error('Image load error:', imageUrl);
+                                    e.currentTarget.style.display = 'none';
+                                    const parent = e.currentTarget.parentElement;
+                                    if (parent) {
+                                      parent.innerHTML = '<div class="text-gray-400 w-full h-full flex items-center justify-center"><span>No Image</span></div>';
+                                    }
+                                  }}
+                                />
+                              );
+                            })()}
                           </div>
                         }
                         actions={[

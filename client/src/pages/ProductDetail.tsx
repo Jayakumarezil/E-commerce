@@ -32,7 +32,7 @@ import {
   CheckCircleOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { formatPrice, getStockStatus, getWarrantyText } from '../utils/helpers';
+import { formatPrice, getStockStatus, getWarrantyText, getImageUrl, getProductImageUrl } from '../utils/helpers';
 
 const { Title, Text, Paragraph } = Typography;
 
@@ -152,22 +152,22 @@ const ProductDetail: React.FC = () => {
                         : imageUrl;
                     }
                     // Skip placeholder/example URLs
-                    const isPlaceholder = imageUrl.includes('example.com') || imageUrl.includes('placeholder');
-                    if (isPlaceholder) {
+                    if (imageUrl && (imageUrl.includes('example.com') || imageUrl.includes('placeholder'))) {
                       return null;
                     }
+                    const fullImageUrl = getImageUrl(imageUrl);
+                    if (!fullImageUrl) return null;
+                    
                     return (
                       <div key={index} className="w-full h-[420px] flex items-center justify-center bg-white">
                         <Image
-                          src={imageUrl}
+                          src={fullImageUrl}
                           alt={`${currentProduct.name} ${index + 1}`}
                           style={{ width: '100%', height: 400, objectFit: 'contain', background: '#fff' }}
                           preview={{ mask: 'Click to preview' }}
                           onError={(e) => {
-                            if (!imageUrl.includes('example.com')) {
-                              console.error('Image load error:', imageUrl);
-                            }
-                            e.currentTarget.src = '/placeholder-image.jpg';
+                            console.error('Image load error:', fullImageUrl);
+                            e.currentTarget.style.display = 'none';
                           }}
                         />
                       </div>
@@ -180,17 +180,12 @@ const ProductDetail: React.FC = () => {
                   <div className="flex space-x-2 mt-4">
                     {(currentProduct.images_json || currentProduct.images || []).map((image: any, index) => {
                       let imageUrl = typeof image === 'string' ? image : (image?.image_url || image);
-                      // Convert to full URL if relative
-                      if (imageUrl && !imageUrl.startsWith('http')) {
-                        imageUrl = imageUrl.startsWith('/uploads') 
-                          ? ((import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000') + imageUrl 
-                          : imageUrl;
-                      }
                       // Skip placeholder/example URLs
-                      const isPlaceholder = imageUrl.includes('example.com') || imageUrl.includes('placeholder');
-                      if (isPlaceholder) {
+                      if (imageUrl && (imageUrl.includes('example.com') || imageUrl.includes('placeholder'))) {
                         return null;
                       }
+                      const fullImageUrl = getImageUrl(imageUrl);
+                      if (!fullImageUrl) return null;
                       return (
                         <div
                           key={index}
@@ -200,14 +195,12 @@ const ProductDetail: React.FC = () => {
                           onClick={() => setSelectedImageIndex(index)}
                         >
                           <Image
-                            src={imageUrl}
+                            src={fullImageUrl}
                             alt={`Thumbnail ${index + 1}`}
                             style={{ width: '100%', height: '100%', objectFit: 'contain', background: '#fff', padding: 2 }}
                             onError={(e) => {
-                              if (!imageUrl.includes('example.com')) {
-                                console.error('Thumbnail load error:', imageUrl);
-                              }
-                              e.currentTarget.src = '/placeholder-image.jpg';
+                              console.error('Thumbnail load error:', fullImageUrl);
+                              e.currentTarget.style.display = 'none';
                             }}
                           />
                         </div>
@@ -328,24 +321,9 @@ const ProductDetail: React.FC = () => {
                     hoverable
                     cover={
                       (() => {
-                        let imageUrl = '';
-                        if (product.images_json && Array.isArray(product.images_json) && product.images_json.length > 0) {
-                          imageUrl = product.images_json[0];
-                        } else if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-                          imageUrl = typeof product.images[0] === 'string' ? product.images[0] : product.images[0]?.image_url || '';
-                        }
+                        const imageUrl = getProductImageUrl(product);
                         
-                        // Convert to full URL if relative
-                        if (imageUrl && !imageUrl.startsWith('http')) {
-                          imageUrl = imageUrl.startsWith('/uploads') 
-                            ? ((import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000') + imageUrl 
-                            : imageUrl;
-                        }
-                        
-                        // Skip placeholder images
-                        const isPlaceholder = imageUrl.includes('example.com') || imageUrl.includes('placeholder');
-                        
-                        return imageUrl && !isPlaceholder ? (
+                        return imageUrl ? (
                           <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                             <img
                               alt={product.name}
@@ -353,7 +331,11 @@ const ProductDetail: React.FC = () => {
                               className="w-full h-full object-cover"
                               onError={(e) => {
                                 console.error('Image load error:', imageUrl);
-                                e.currentTarget.src = '/placeholder-product.jpg';
+                                e.currentTarget.style.display = 'none';
+                                const parent = e.currentTarget.parentElement;
+                                if (parent) {
+                                  parent.innerHTML = '<div class="h-48 bg-gray-100 flex items-center justify-center"><span class="text-gray-400">No Image</span></div>';
+                                }
                               }}
                             />
                           </div>
