@@ -45,7 +45,7 @@ const TopProductsTable: React.FC = () => {
                 let imageUrl = record.image_url;
                 if (imageUrl && !imageUrl.startsWith('http')) {
                   imageUrl = imageUrl.startsWith('/uploads') 
-                    ? `http://localhost:5000${imageUrl}` 
+                    ? ((import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000') + imageUrl
                     : imageUrl;
                 }
                 // Skip placeholder images

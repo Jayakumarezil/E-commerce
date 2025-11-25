@@ -262,7 +262,7 @@ const AdminProducts: React.FC = () => {
         let fullImageUrl = firstImageUrl;
         if (firstImageUrl && !firstImageUrl.startsWith('http')) {
           fullImageUrl = firstImageUrl.startsWith('/uploads') 
-            ? `http://localhost:5000${firstImageUrl}` 
+            ? ((import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000') + firstImageUrl 
             : firstImageUrl;
         }
         

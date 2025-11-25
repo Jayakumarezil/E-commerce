@@ -283,7 +283,7 @@ const Products: React.FC = () => {
                                 const imageUrl = product.images_json?.[0] || product.images?.[0]?.image_url || '';
                                 // Convert to full URL if relative
                                 const fullUrl = imageUrl.startsWith('http') ? imageUrl : 
-                                  imageUrl.startsWith('/uploads') ? `http://localhost:5000${imageUrl}` : imageUrl;
+                                  imageUrl.startsWith('/uploads') ?((import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000') + imageUrl : imageUrl;
                                 // Skip placeholder/example URLs silently
                                 const isPlaceholder = fullUrl.includes('example.com') || fullUrl.includes('placeholder');
                                 

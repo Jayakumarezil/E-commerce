@@ -381,7 +381,7 @@ const ClaimDetailsModal: React.FC<{
             <strong>Supporting Documents:</strong>
             <div style={{ marginTop: '8px' }}>
               {selectedClaim.image_url.split(',').map((url, index) => {
-                const apiUrl = url.startsWith('http') ? url : `http://localhost:5000${url}`;
+                const apiUrl = url.startsWith('http') ? url : ((import.meta as any).env?.VITE_API_BASE_URL || 'http://localhost:5000') + url;
                 return (
                   <div key={index} style={{ marginBottom: '8px' }}>
                     <img 
