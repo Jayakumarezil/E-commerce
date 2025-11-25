@@ -18,13 +18,13 @@ export const getCategories = async (req: Request, res: Response) => {
       order: [['name', 'ASC']],
     });
 
-    res.json({
+    return res.json({
       success: true,
       data: categories,
     });
   } catch (error: any) {
     console.error('Get categories error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to fetch categories',
       error: error.message,
@@ -46,13 +46,13 @@ export const getCategoryById = async (req: Request, res: Response) => {
       });
     }
 
-    res.json({
+    return res.json({
       success: true,
       data: category,
     });
   } catch (error: any) {
     console.error('Get category by ID error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to fetch category',
       error: error.message,
@@ -91,7 +91,7 @@ export const createCategory = async (req: Request, res: Response) => {
       is_active: is_active !== false,
     });
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
       message: 'Category created successfully',
       data: category,
@@ -106,7 +106,7 @@ export const createCategory = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to create category',
       error: error.message,
@@ -153,7 +153,7 @@ export const updateCategory = async (req: Request, res: Response) => {
 
     await category.save();
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Category updated successfully',
       data: category,
@@ -168,7 +168,7 @@ export const updateCategory = async (req: Request, res: Response) => {
       });
     }
 
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to update category',
       error: error.message,
@@ -205,13 +205,13 @@ export const deleteCategory = async (req: Request, res: Response) => {
 
     await category.destroy();
 
-    res.json({
+    return res.json({
       success: true,
       message: 'Category deleted successfully',
     });
   } catch (error: any) {
     console.error('Delete category error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to delete category',
       error: error.message,
@@ -236,14 +236,14 @@ export const toggleCategoryStatus = async (req: Request, res: Response) => {
     category.is_active = !category.is_active;
     await category.save();
 
-    res.json({
+    return res.json({
       success: true,
       message: `Category ${category.is_active ? 'activated' : 'deactivated'} successfully`,
       data: category,
     });
   } catch (error: any) {
     console.error('Toggle category status error:', error);
-    res.status(500).json({
+    return res.status(500).json({
       success: false,
       message: 'Failed to toggle category status',
       error: error.message,
