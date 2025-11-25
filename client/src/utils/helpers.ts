@@ -171,7 +171,8 @@ export function getImageUrl(imagePath: string | undefined | null): string {
   console.log('imagePath', imagePath);
   // If already a full URL, return as is
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath;
+    const apiBaseWithoutApi = imagePath.replace('/api', '');
+    return apiBaseWithoutApi;
   }
   
   // Get base URL from environment
