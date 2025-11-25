@@ -3,6 +3,7 @@ import { Op } from 'sequelize';
 import Product from '../models/Product';
 import ProductImage from '../models/ProductImage';
 import { handleValidationErrors } from '../middleware/validationHandler';
+import  Category  from '../models/Category';
 
 // Get all products with pagination, filtering, and search
 export const getProducts = async (req: Request, res: Response) => {
@@ -131,10 +132,27 @@ export const getProductById = async (req: Request, res: Response) => {
   }
 };
 
-// Get all categories
+// Get all categories (deprecated - use /api/categories instead)
+// This endpoint is kept for backward compatibility
 export const getCategories = async (req: Request, res: Response) => {
   try {
-    // Get unique categories from products
+    // Try to get categories from Category model first
+    const dbCategories = await Category.findAll({
+      where: { is_active: true },
+      order: [['name', 'ASC']],
+      attributes: ['name'],
+    });
+
+    if (dbCategories.length > 0) {
+      // Use categories from database
+      const categories = dbCategories.map(c => ({ name: c.name }));
+      return res.json({
+        success: true,
+        data: { categories },
+      });
+    }
+
+    // Fallback: Get unique categories from products (for backward compatibility)
     const products = await Product.findAll({
       where: { is_active: true },
       attributes: ['category'],

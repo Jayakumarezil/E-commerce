@@ -9,6 +9,7 @@ import Warranty from './Warranty';
 import Claim from './Claim';
 import PasswordResetToken from './PasswordResetToken';
 import Membership from './Membership';
+import Category from './Category';
 
 // Define associations
 // User associations
@@ -159,5 +160,6 @@ export {
   Claim,
   PasswordResetToken,
   Membership,
+  Category,
   syncDatabase,
 };

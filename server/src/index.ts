@@ -18,6 +18,7 @@ import warrantyRoutes from './routes/warrantyRoutes';
 import adminRoutes from './routes/adminRoutes';
 import uploadRoutes from './routes/uploadRoutes';
 import membershipRoutes from './routes/membershipRoutes';
+import categoryRoutes from './routes/categoryRoutes';
 import { syncDatabase } from './models';
 import path from 'path';
 import fs from 'fs';
@@ -106,6 +107,7 @@ try {
   app.use('/api/admin', adminRoutes);
   app.use('/api/upload', uploadRoutes);
   app.use('/api/memberships', membershipRoutes);
+  app.use('/api/categories', categoryRoutes);
   console.log('✅ API routes registered successfully');
 } catch (error: any) {
   console.error('❌ Failed to register API routes:', error.message);

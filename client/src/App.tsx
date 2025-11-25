@@ -30,6 +30,7 @@ const AdminManualOrder = React.lazy(() => import('./pages/AdminManualOrder'));
 const AdminUsers = React.lazy(() => import('./pages/AdminUsers'));
 const MembershipSearch = React.lazy(() => import('./pages/MembershipSearch'));
 const AdminMemberships = React.lazy(() => import('./pages/AdminMemberships'));
+const AdminCategories = React.lazy(() => import('./pages/AdminCategories'));
 import './index.css';
 
 const theme = {
@@ -78,6 +79,7 @@ function App() {
                 <Route path="/admin/orders/manual" element={<AdminManualOrder />} />
                 <Route path="/admin/users" element={<AdminUsers />} />
                 <Route path="/admin/memberships" element={<PrivateRoute requiredRole="admin"><AdminMemberships /></PrivateRoute>} />
+                <Route path="/admin/categories" element={<PrivateRoute requiredRole="admin"><AdminCategories /></PrivateRoute>} />
                 
                 <Route path="*" element={<NotFound />} />
               </Routes>

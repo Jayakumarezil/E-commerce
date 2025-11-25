@@ -1,6 +1,7 @@
 import { call, put, takeEvery, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { productService, ProductFilters } from '../../services/productService';
+import { categoryService } from '../../services/categoryService';
 import {
   fetchProductsStart,
   fetchProductsSuccess,
@@ -45,10 +46,19 @@ function* fetchFeaturedProductsSaga(): Generator<any, void, any> {
 
 function* fetchCategoriesSaga(): Generator<any, void, any> {
   try {
-    const response: any = yield call(productService.getCategories);
-    yield put(fetchCategoriesSuccess(response));
+    // Use the new category service to get categories from database
+    const categories: any = yield call(categoryService.getCategories, true);
+    // Transform Category[] to { name: string }[] format for backward compatibility
+    const formattedCategories = categories.map((cat: any) => ({ name: cat.name }));
+    yield put(fetchCategoriesSuccess(formattedCategories));
   } catch (error: any) {
-    yield put(fetchCategoriesFailure(error.message || 'Failed to fetch categories'));
+    // Fallback to old product service if category service fails
+    try {
+      const response: any = yield call(productService.getCategories);
+      yield put(fetchCategoriesSuccess(response));
+    } catch (fallbackError: any) {
+      yield put(fetchCategoriesFailure(error.message || 'Failed to fetch categories'));
+    }
   }
 }
 

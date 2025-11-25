@@ -16,7 +16,8 @@ import {
   SettingOutlined,
   HomeOutlined,
   ShopOutlined,
-  IdcardOutlined
+  IdcardOutlined,
+  AppstoreOutlined
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 
@@ -100,6 +101,11 @@ const Navbar: React.FC = () => {
         key: 'admin-memberships',
         icon: <IdcardOutlined />,
         label: <Link to="/admin/memberships">Manage Memberships</Link>,
+      },
+      {
+        key: 'admin-categories',
+        icon: <AppstoreOutlined />,
+        label: <Link to="/admin/categories">Manage Categories</Link>,
       },
     ] as any : []),
     {
