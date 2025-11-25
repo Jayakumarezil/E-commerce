@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { formatPrice } from '../utils/helpers';
+import { formatPrice, getProductImageUrl } from '../utils/helpers';
 import { RootState } from '../redux/store';
 import { fetchFeaturedProductsStart } from '../redux/slices/productSlice';
 
@@ -29,22 +29,6 @@ const Home: React.FC = () => {
     dispatch(fetchFeaturedProductsStart());
   }, [dispatch]);
 
-  const getProductImage = (product: any) => {
-    let imageUrl = '';
-    if (product.images_json && Array.isArray(product.images_json) && product.images_json.length > 0) {
-      imageUrl = product.images_json[0];
-    } else if (product.images && Array.isArray(product.images) && product.images.length > 0) {
-      imageUrl = typeof product.images[0] === 'string' ? product.images[0] : product.images[0]?.image_url || '';
-    }
-    
-    if (imageUrl && !imageUrl.startsWith('http')) {
-      imageUrl = imageUrl.startsWith('/uploads') 
-        ? `http://localhost:5000${imageUrl}` 
-        : imageUrl;
-    }
-    
-    return { imageUrl, isPlaceholder: imageUrl.includes('example.com') || imageUrl.includes('placeholder') };
-  };
 
   return (
     <div className="min-h-screen">
@@ -123,7 +107,7 @@ const Home: React.FC = () => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8"
           >
             {featuredProducts.map((product) => {
-              const { imageUrl, isPlaceholder } = getProductImage(product);
+              const imageUrl = getProductImageUrl(product);
               return (
                 <motion.div
                   key={product.product_id}
@@ -133,7 +117,7 @@ const Home: React.FC = () => {
                   <Link to={`/products/${product.product_id}`}>
                     <div className="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-300 h-full flex flex-col group">
                       <div className="relative bg-gray-50 h-80 overflow-hidden">
-                        {imageUrl && !isPlaceholder ? (
+                        {imageUrl ? (
                           <img
                             alt={product.name}
                             src={imageUrl}
@@ -141,6 +125,10 @@ const Home: React.FC = () => {
                             onError={(e) => {
                               console.error('Image load error:', imageUrl);
                               e.currentTarget.style.display = 'none';
+                              const parent = e.currentTarget.parentElement;
+                              if (parent) {
+                                parent.innerHTML = '<div class="w-full h-full flex items-center justify-center"><span class="text-gray-400">No Image</span></div>';
+                              }
                             }}
                           />
                         ) : (

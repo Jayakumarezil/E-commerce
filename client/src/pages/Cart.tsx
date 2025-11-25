@@ -30,7 +30,7 @@ import {
   PlusOutlined,
   ClearOutlined,
 } from '@ant-design/icons';
-import { formatPrice, getStockStatus } from '../utils/helpers';
+import { formatPrice, getStockStatus, getProductImageUrl } from '../utils/helpers';
 import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
@@ -125,15 +125,21 @@ const Cart: React.FC = () => {
                     <List.Item.Meta
                       avatar={
                         <div className="w-20 h-20 bg-gray-100 flex items-center justify-center rounded">
-                          {item.product.images_json && item.product.images_json.length > 0 ? (
-                            <img
-                              src={item.product.images_json[0].startsWith('http') ? item.product.images_json[0] : `http://localhost:5000${item.product.images_json[0]}`}
-                              alt={item.product.name}
-                              className="w-full h-full object-cover rounded"
-                            />
-                          ) : (
+                          {(() => {
+                            const imageUrl = getProductImageUrl(item.product);
+                            return imageUrl ? (
+                              <img
+                                src={imageUrl}
+                                alt={item.product.name}
+                                className="w-full h-full object-cover rounded"
+                                onError={(e) => {
+                                  e.currentTarget.style.display = 'none';
+                                }}
+                              />
+                            ) : (
                             <ShoppingCartOutlined className="text-2xl text-gray-400" />
-                          )}
+                          );
+                        })()}
                         </div>
                       }
                       title={

@@ -164,3 +164,52 @@ export function toSlug(str: string): string {
     .replace(/[\s_-]+/g, '-')
     .replace(/^-+|-+$/g, '');
 }
+
+// Get image URL utility - converts relative image paths to full URLs
+export function getImageUrl(imagePath: string | undefined | null): string {
+  if (!imagePath) return '';
+  
+  // If already a full URL, return as is
+  if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+    return imagePath;
+  }
+  
+  // Get base URL from environment
+  const apiBase = ((import.meta as any).env?.VITE_API_BASE_URL as string) || 'http://localhost:5000/api';
+  const baseUrl = apiBase.replace('/api', ''); // Remove /api to get base URL
+  
+  // Ensure proper path formatting
+  if (imagePath.startsWith('/')) {
+    return `${baseUrl}${imagePath}`;
+  }
+  
+  return `${baseUrl}/${imagePath}`;
+}
+
+// Get product image from product object (handles both old and new formats)
+export function getProductImageUrl(product: {
+  images_json?: string[];
+  images?: Array<string | { image_url?: string }>;
+}): string {
+  let imageUrl = '';
+  
+  // Try new format first (images array)
+  if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+    const firstImage = product.images[0];
+    imageUrl = typeof firstImage === 'string' 
+      ? firstImage 
+      : firstImage?.image_url || '';
+  } 
+  // Fallback to old format (images_json)
+  else if (product.images_json && Array.isArray(product.images_json) && product.images_json.length > 0) {
+    imageUrl = product.images_json[0];
+  }
+  
+  // Skip placeholder images
+  if (imageUrl && (imageUrl.includes('example.com') || imageUrl.includes('placeholder'))) {
+    return '';
+  }
+  
+  // Convert to full URL if relative
+  return getImageUrl(imageUrl);
+}
