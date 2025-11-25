@@ -29,7 +29,6 @@ if (databaseUrl) {
   // Log which URL we're using (without password)
   const urlForLogging = url.replace(/:([^:@]+)@/, ':****@');
   console.log('📊 Database URL detected:', urlForLogging);
-  console.log('URL:', url);
   // Railway sometimes uses postgres.railway.internal for internal connections
   // This should work if services are in the same Railway project
   if (url.includes('postgres.railway.internal')) {

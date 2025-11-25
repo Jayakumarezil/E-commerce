@@ -95,6 +95,18 @@ class CronJobScheduler {
   // Cleanup expired password reset tokens
   private async cleanupExpiredTokens(): Promise<void> {
     try {
+      // Check database connection first
+      const sequelize = (await import('../config/database')).default;
+      try {
+        await sequelize.authenticate();
+      } catch (dbError: any) {
+        if (dbError.code === 'ENOTFOUND' || dbError.name === 'SequelizeConnectionRefusedError' || dbError.name === 'SequelizeHostNotFoundError') {
+          console.log('⚠️  Database not available, skipping token cleanup');
+          return;
+        }
+        throw dbError;
+      }
+      
       const { PasswordResetToken } = await import('../models');
       const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
       
@@ -117,6 +129,18 @@ class CronJobScheduler {
   // Update product status based on stock levels
   private async updateProductStatus(): Promise<void> {
     try {
+      // Check database connection first
+      const sequelize = (await import('../config/database')).default;
+      try {
+        await sequelize.authenticate();
+      } catch (dbError: any) {
+        if (dbError.code === 'ENOTFOUND' || dbError.name === 'SequelizeConnectionRefusedError' || dbError.name === 'SequelizeHostNotFoundError') {
+          console.log('⚠️  Database not available, skipping product status update');
+          return;
+        }
+        throw dbError;
+      }
+      
       // Mark products as inactive if out of stock
       const outOfStockCount = await Product.update(
         { is_active: false },
@@ -156,6 +180,18 @@ class CronJobScheduler {
   // Process order status updates (simulate shipping and delivery)
   private async processOrderStatusUpdates(): Promise<void> {
     try {
+      // Check database connection first
+      const sequelize = (await import('../config/database')).default;
+      try {
+        await sequelize.authenticate();
+      } catch (dbError: any) {
+        if (dbError.code === 'ENOTFOUND' || dbError.name === 'SequelizeConnectionRefusedError' || dbError.name === 'SequelizeHostNotFoundError') {
+          console.log('⚠️  Database not available, skipping order status updates');
+          return;
+        }
+        throw dbError;
+      }
+      
       const { Order } = await import('../models');
       
       // Find orders that are confirmed and should be shipped
@@ -213,8 +249,13 @@ class CronJobScheduler {
 
         console.log(`Order ${order.order_id} marked as delivered`);
       }
-    } catch (error) {
-      console.error('Failed to process order status updates:', error);
+    } catch (error: any) {
+      // Don't log full error stack for database connection issues
+      if (error.code === 'ENOTFOUND' || error.name === 'SequelizeConnectionRefusedError' || error.name === 'SequelizeHostNotFoundError') {
+        console.log('⚠️  Database not available, skipping order status updates');
+      } else {
+        console.error('Failed to process order status updates:', error.message || error);
+      }
     }
   }
 

@@ -52,33 +52,33 @@ PasswordResetToken.belongsTo(User, { foreignKey: 'user_id', as: 'user' });
 // Sync database with retry logic
 const syncDatabase = async (retries = 5, delay = 2000) => {
   for (let i = 0; i < retries; i++) {
-    try {
+  try {
       // Test connection first
       await sequelize.authenticate();
       console.log('✅ Database connection established');
       
-      // Check if database exists
-      const [results] = await sequelize.query(`
-        SELECT table_name 
-        FROM information_schema.tables 
-        WHERE table_schema = 'public' 
-        AND table_name = 'users'
-      `);
+    // Check if database exists
+    const [results] = await sequelize.query(`
+      SELECT table_name 
+      FROM information_schema.tables 
+      WHERE table_schema = 'public' 
+      AND table_name = 'users'
+    `);
+    
+    if (results.length === 0) {
+      // Database doesn't exist, create it fresh
+      console.log('🔄 Creating fresh database...');
+      await sequelize.sync({ force: true });
+    } else {
+      // Database exists, but we need to handle ENUM conflicts
+      console.log('🔄 Database exists, checking for ENUM conflicts...');
       
-      if (results.length === 0) {
-        // Database doesn't exist, create it fresh
-        console.log('🔄 Creating fresh database...');
-        await sequelize.sync({ force: true });
-      } else {
-        // Database exists, but we need to handle ENUM conflicts
-        console.log('🔄 Database exists, checking for ENUM conflicts...');
-        
-        try {
-          // Try to sync without altering first
+      try {
+        // Try to sync without altering first
           await sequelize.sync({ alter: false });
-          console.log('✅ Database synced successfully');
+        console.log('✅ Database synced successfully');
         } catch (syncError: any) {
-          console.log('⚠️ Sync failed, this might be due to ENUM conflicts.');
+        console.log('⚠️ Sync failed, this might be due to ENUM conflicts.');
           console.log('💡 Attempting to sync with alter mode...');
           try {
             await sequelize.sync({ alter: true });
@@ -94,7 +94,6 @@ const syncDatabase = async (retries = 5, delay = 2000) => {
       console.log('✅ Database synchronized successfully');
       return;
     } catch (error: any) {
-      console.log('Error:', error);
       const isLastAttempt = i === retries - 1;
       
       if (error.code === 'ECONNREFUSED' || error.name === 'SequelizeConnectionRefusedError') {
