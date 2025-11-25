@@ -116,14 +116,44 @@ try {
 
 // Serve static files from uploads directory
 try {
-  app.use('/uploads', express.static(path.join(__dirname, '../uploads'), {
-    setHeaders: (res, path) => {
+  const uploadsPath = path.join(__dirname, '../uploads');
+  
+  // Log the uploads path for debugging
+  console.log(`📁 Uploads directory path: ${uploadsPath}`);
+  console.log(`📁 Uploads directory exists: ${fs.existsSync(uploadsPath)}`);
+  
+  // Ensure uploads directory exists
+  if (!fs.existsSync(uploadsPath)) {
+    fs.mkdirSync(uploadsPath, { recursive: true });
+    console.log(`📁 Created uploads directory: ${uploadsPath}`);
+  }
+  
+  // Serve static files - express.static will call next() if file doesn't exist
+  app.use('/uploads', express.static(uploadsPath, {
+    setHeaders: (res, filePath) => {
       res.set('Access-Control-Allow-Origin', '*');
       res.set('Access-Control-Allow-Methods', 'GET');
-    }
+    },
+    index: false,
   }));
+  
+  // Handle missing upload files gracefully (must be after static middleware, before SPA fallback)
+  app.use('/uploads', (req, res) => {
+    // If we reach here, express.static didn't find the file
+    const filePath = path.join(uploadsPath, req.path.replace(/^\/uploads\//, ''));
+    console.log(`⚠️  Upload file not found: ${req.originalUrl} (resolved to: ${filePath})`);
+    
+    // Return 404 JSON response without throwing error
+    return res.status(404).json({
+      message: 'File not found',
+      path: req.originalUrl,
+    });
+  });
+  
+  console.log(`✅ Static file serving configured for /uploads`);
 } catch (error: any) {
-  console.log('⚠️  Could not set up uploads directory:', error.message);
+  console.error('❌ Could not set up uploads directory:', error.message);
+  console.error(error.stack);
 }
 
 // SPA fallback for non-API routes when client build exists
