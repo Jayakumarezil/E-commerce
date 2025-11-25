@@ -20,6 +20,7 @@ import uploadRoutes from './routes/uploadRoutes';
 import membershipRoutes from './routes/membershipRoutes';
 import { syncDatabase } from './models';
 import path from 'path';
+import fs from 'fs';
 import emailService from './services/emailService';
 
 // Load environment variables
@@ -68,9 +69,21 @@ app.get('/health', (req, res) => {
   });
 });
 
+const clientBuildPath = path.join(__dirname, '../../client/dist');
+const hasClientBuild = fs.existsSync(clientBuildPath);
+
+if (hasClientBuild) {
+  console.log('✅ Client build detected. Serving static files from:', clientBuildPath);
+  app.use(express.static(clientBuildPath));
+}
+
 // Root endpoint
 app.get('/', (req, res) => {
-  res.json({
+  if (hasClientBuild) {
+    return res.sendFile(path.join(clientBuildPath, 'index.html'));
+  }
+
+  return res.json({
     message: 'E-commerce API Server',
     version: '1.0.0',
     status: 'running',
@@ -109,6 +122,17 @@ try {
   }));
 } catch (error: any) {
   console.log('⚠️  Could not set up uploads directory:', error.message);
+}
+
+// SPA fallback for non-API routes when client build exists
+if (hasClientBuild) {
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/health')) {
+      return next();
+    }
+
+    return res.sendFile(path.join(clientBuildPath, 'index.html'));
+  });
 }
 
 // Error handling middleware
