@@ -29,12 +29,16 @@ if (databaseUrl) {
   // Log which URL we're using (without password)
   const urlForLogging = url.replace(/:([^:@]+)@/, ':****@');
   console.log('📊 Database URL detected:', urlForLogging);
-  
+  console.log('URL:', url);
   // Railway sometimes uses postgres.railway.internal for internal connections
-  // If this fails, try using individual PG* variables if available
-  if (url.includes('postgres.railway.internal') && hasPgParams) {
-    console.log('⚠️  Internal hostname detected, but PG* variables available');
-    console.log('ℹ️  Will try individual parameters if URL connection fails');
+  // This should work if services are in the same Railway project
+  if (url.includes('postgres.railway.internal')) {
+    console.log('ℹ️  Using Railway internal hostname (postgres.railway.internal)');
+    console.log('ℹ️  Ensure PostgreSQL service is in the same Railway project');
+    console.log('⚠️  If connection fails, check:');
+    console.log('   1. PostgreSQL service is deployed and running');
+    console.log('   2. Both services are in the same Railway project');
+    console.log('   3. Services are properly linked (DATABASE_URL should be auto-set)');
   }
   
   // Railway provides DATABASE_URL in format: postgresql://user:password@host:port/database

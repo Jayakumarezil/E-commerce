@@ -112,6 +112,27 @@ const syncDatabase = async (retries = 5, delay = 2000) => {
           await new Promise(resolve => setTimeout(resolve, delay));
           continue;
         }
+      } else if (error.code === 'ENOTFOUND' || error.message?.includes('ENOTFOUND') || error.message?.includes('getaddrinfo')) {
+        // Hostname resolution failed (common with Railway's postgres.railway.internal)
+        if (isLastAttempt) {
+          console.error('❌ Database hostname resolution failed after', retries, 'attempts');
+          console.error('❌ Error:', error.message);
+          console.log('\n⚠️  Server will start, but database features will not work');
+          console.log('🔧 Railway-specific troubleshooting:');
+          console.log('   1. Go to your Railway project dashboard');
+          console.log('   2. Ensure PostgreSQL service exists and is running');
+          console.log('   3. Check that both services are in the SAME Railway project');
+          console.log('   4. Verify DATABASE_URL is set in your app service variables');
+          console.log('   5. If postgres.railway.internal fails:');
+          console.log('      → Go to PostgreSQL service → Connect tab');
+          console.log('      → Copy the connection string and set as DATABASE_URL');
+          // Don't throw - allow server to start without database
+          return;
+        } else {
+          console.log(`⚠️  Database hostname resolution failed (attempt ${i + 1}/${retries}), retrying in ${delay}ms...`);
+          await new Promise(resolve => setTimeout(resolve, delay));
+          continue;
+        }
       } else {
         // Other database errors
         console.error('❌ Database synchronization failed:', error.message);
