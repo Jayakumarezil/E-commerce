@@ -175,15 +175,8 @@ export function getImageUrl(imagePath: string | undefined | null): string {
   }
   
   // Get base URL from environment
-  const apiBase = ((import.meta as any).env?.VITE_API_BASE_URL as string) || 'http://localhost:5000/api';
-  const baseUrl = apiBase.replace('/api', ''); // Remove /api to get base URL
-  
-  // Ensure proper path formatting
-  if (imagePath.startsWith('/')) {
-    return `${baseUrl}${imagePath}`;
-  }
-  
-  return `${baseUrl}/${imagePath}`;
+  const apiBase = (((import.meta as any).env?.VITE_API_BASE_URL as string) || 'http://localhost:5000/api')+'/uploads';
+  return `${apiBase}${imagePath}`;
 }
 
 // Get product image from product object (handles both old and new formats)

@@ -57,7 +57,7 @@ const initialState: ProductState = {
   filters: {
     category: '',
     minPrice: 0,
-    maxPrice: 10000,
+    maxPrice: 100000,
     search: '',
     sortBy: 'created_at',
     sortOrder: 'DESC',

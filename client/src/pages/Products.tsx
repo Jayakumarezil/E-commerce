@@ -92,7 +92,7 @@ const Products: React.FC = () => {
     dispatch(setFilters({
       category: '',
       minPrice: 0,
-      maxPrice: 10000,
+      maxPrice: 100000,
       search: '',
       sortBy: 'created_at',
       sortOrder: 'DESC',
@@ -173,10 +173,10 @@ const Products: React.FC = () => {
                 <Text strong>Price Range</Text>
                 <Select
                   placeholder="All Prices"
-                  value={filters.minPrice > 0 || filters.maxPrice < 10000 ? `${filters.minPrice}-${filters.maxPrice}` : undefined}
+                  value={filters.minPrice > 0 || filters.maxPrice < 100000 ? `${filters.minPrice}-${filters.maxPrice}` : undefined}
                   onChange={(value) => {
                     if (!value) {
-                      handlePriceChange([0, 10000]);
+                      handlePriceChange([0, 100000]);
                     } else {
                       const [min, max] = value.split('-').map(Number);
                       handlePriceChange([min, max]);
