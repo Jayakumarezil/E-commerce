@@ -148,5 +148,7 @@ jspm_packages/
 ehthumbs.db
 Thumbs.db
 
-# Uploads
-uploads/
+# Uploads - ignore files but keep folder structure
+uploads/*
+!uploads/.gitkeep
+!uploads/claims/.gitkeep

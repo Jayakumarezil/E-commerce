@@ -4,6 +4,8 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm ci && npm cache clean --force
 
+# Copy all source files including assets/images folder
+# Note: assets/images/ contains static images (QR_code.png, logo.jpeg, etc.)
 COPY . .
 RUN npm run build
 
