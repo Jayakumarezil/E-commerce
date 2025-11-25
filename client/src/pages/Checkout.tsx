@@ -57,7 +57,7 @@ const Checkout: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const showPaymentMethods = String(((import.meta as any).env?.VITE_SHOW_PAYMENT_METHODS ?? 'false')).toLowerCase() === 'true';
   const forceQr = String(((import.meta as any).env?.VITE_USE_QR_PAYMENT ?? 'false')).toLowerCase() === 'true';
-  const envQr = (import.meta as any).env?.VITE_QR_IMAGE_URL || '';
+  const envQr = new URL('../assets/images/QR_code.png', import.meta.url).href;
   const fallbackQr = new URL('../assets/images/QR_code.png', import.meta.url).href;
   const qrImageSrc = envQr || fallbackQr;
   const [paymentMethod, setPaymentMethod] = useState<'razorpay' | 'upi' | 'card'>('razorpay');

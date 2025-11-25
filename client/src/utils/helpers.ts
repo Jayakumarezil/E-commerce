@@ -178,7 +178,9 @@ export function getImageUrl(imagePath: string | undefined | null): string {
   const apiBase = (((import.meta as any).env?.VITE_API_BASE_URL as string) || 'http://localhost:5000');
   console.log('apiBase', apiBase);
   console.log('${apiBase}${imagePath}', `${apiBase}${imagePath}`);
-  return `${apiBase}${imagePath}`;
+  const apiBaseWithoutApi = apiBase.replace('/api', '');
+  console.log('apiBaseWithoutApi', apiBaseWithoutApi);
+  return `${apiBaseWithoutApi}${imagePath}`;
 }
 
 // Get product image from product object (handles both old and new formats)
