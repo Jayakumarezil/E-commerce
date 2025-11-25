@@ -279,6 +279,13 @@ const Products: React.FC = () => {
                           <div className="h-48 bg-gray-100 flex items-center justify-center overflow-hidden">
                             {(() => {
                               const imageUrl = getProductImageUrl(product);
+                              // Debug logging
+                              if (import.meta.env) {
+                                console.log('Product:', product.name);
+                                console.log('images_json:', product.images_json);
+                                console.log('images:', product.images);
+                                console.log('Final imageUrl:', imageUrl);
+                              }
                               if (!imageUrl) {
                                 return (
                                   <div className="text-gray-400 w-full h-full flex items-center justify-center">
@@ -292,11 +299,21 @@ const Products: React.FC = () => {
                                   src={imageUrl}
                                   className="w-full h-full object-cover"
                                   onError={(e) => {
-                                    console.error('Image load error:', imageUrl);
+                                    console.error('Image load error for product:', product.name);
+                                    console.error('Attempted URL:', imageUrl);
+                                    console.error('Product data:', { 
+                                      images_json: product.images_json, 
+                                      images: product.images 
+                                    });
                                     e.currentTarget.style.display = 'none';
                                     const parent = e.currentTarget.parentElement;
                                     if (parent) {
                                       parent.innerHTML = '<div class="text-gray-400 w-full h-full flex items-center justify-center"><span>No Image</span></div>';
+                                    }
+                                  }}
+                                  onLoad={() => {
+                                    if (import.meta.env) {
+                                      console.log('Image loaded successfully:', imageUrl);
                                     }
                                   }}
                                 />

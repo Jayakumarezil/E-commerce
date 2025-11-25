@@ -176,35 +176,55 @@ export function getImageUrl(imagePath: string | undefined | null): string {
   }
   
   // Get base URL from environment
-  const apiBase = (((import.meta as any).env?.VITE_API_BASE_URL as string) || 'http://localhost:5000');
-  console.log('apiBase', apiBase);
-  console.log('${apiBase}${imagePath}', `${apiBase}${imagePath}`);
-  const apiBaseWithoutApi = apiBase.replace('/api', '');
-  console.log('apiBaseWithoutApi', apiBaseWithoutApi);
-  return `${apiBaseWithoutApi}${imagePath}`;
+  const apiBase = ((import.meta as any).env?.VITE_API_BASE_URL as string) || 'http://localhost:5000/api';
+  // Remove /api suffix if present to get the base server URL
+  const baseUrl = apiBase.replace(/\/api$/, '');
+  
+  // Ensure proper path formatting
+  // If imagePath starts with /, use it directly, otherwise add /
+  const normalizedPath = imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+  
+  const fullUrl = `${baseUrl}${normalizedPath}`;
+  
+  // Debug logging in development
+  if (import.meta.env.DEV) {
+    console.log('getImageUrl - Input:', imagePath);
+    console.log('getImageUrl - Base URL:', baseUrl);
+    console.log('getImageUrl - Full URL:', fullUrl);
+  }
+  
+  return fullUrl;
 }
 
 // Get product image from product object (handles both old and new formats)
 export function getProductImageUrl(product: {
-  images_json?: string[];
-  images?: Array<string | { image_url?: string }>;
+  images_json?: string[] | null;
+  images?: Array<string | { image_url?: string }> | null;
 }): string {
   let imageUrl = '';
   
   // Try new format first (images array)
   if (product.images && Array.isArray(product.images) && product.images.length > 0) {
     const firstImage = product.images[0];
-    imageUrl = typeof firstImage === 'string' 
-      ? firstImage 
-      : firstImage?.image_url || '';
+    if (firstImage) {
+      imageUrl = typeof firstImage === 'string' 
+        ? firstImage 
+        : firstImage?.image_url || '';
+    }
   } 
   // Fallback to old format (images_json)
   else if (product.images_json && Array.isArray(product.images_json) && product.images_json.length > 0) {
-    imageUrl = product.images_json[0];
+    const firstImageJson = product.images_json[0];
+    imageUrl = firstImageJson || '';
+  }
+  
+  // Clean up the URL - remove empty strings, null, undefined
+  if (!imageUrl || imageUrl.trim() === '' || imageUrl === 'null' || imageUrl === 'undefined') {
+    return '';
   }
   
   // Skip placeholder images
-  if (imageUrl && (imageUrl.includes('example.com') || imageUrl.includes('placeholder'))) {
+  if (imageUrl.includes('example.com') || imageUrl.includes('placeholder')) {
     return '';
   }
   

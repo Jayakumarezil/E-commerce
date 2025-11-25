@@ -56,4 +56,6 @@ Thumbs.db
 # Uploads - ignore files but keep folder structure
 !uploads/.gitkeep
 !uploads/claims/.gitkeep
+!assets/.gitkeep
 !assets/images/.gitkeep
+!assets/images/QR_code.png
