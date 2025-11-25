@@ -168,14 +168,16 @@ export function toSlug(str: string): string {
 // Get image URL utility - converts relative image paths to full URLs
 export function getImageUrl(imagePath: string | undefined | null): string {
   if (!imagePath) return '';
-  
+  console.log('imagePath', imagePath);
   // If already a full URL, return as is
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
     return imagePath;
   }
   
   // Get base URL from environment
-  const apiBase = (((import.meta as any).env?.VITE_API_BASE_URL as string) || 'http://localhost:5000/api')+'/uploads';
+  const apiBase = (((import.meta as any).env?.VITE_API_BASE_URL as string) || 'http://localhost:5000');
+  console.log('apiBase', apiBase);
+  console.log('${apiBase}${imagePath}', `${apiBase}${imagePath}`);
   return `${apiBase}${imagePath}`;
 }
 
